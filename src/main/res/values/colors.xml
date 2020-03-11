@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#E63802</color>
+    <color name="colorAccent">#FFC107</color>
+    <color name="c_green">#33E44A</color>
+    <color name="c_orange">#F7C342</color>
+    <color name="c_text">#EE44DD</color>
+    <color name="c_list_name">#FFF422</color>
+    <color name="c_list_second">#DDD539</color>
+    <color name="c_list_editor">#FFFFFF</color><!--#AC721B-->
+    <color name="c_card_background">#CDFF5ECA</color>
+    <color name="c_card_selected_background">#CBF45EFF</color>
+</resources>

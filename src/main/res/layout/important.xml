@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/impo_rel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/impo_child_Relative"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/impo_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/app_name"
+                android:textColor="#000000"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/impo_introduction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/impo_title"
+                android:layout_alignStart="@id/impo_title"
+                android:layout_alignLeft="@id/impo_title"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/app_name" />
+
+            <ImageView
+                android:id="@+id/impo_imageView"
+                android:layout_width="365dp"
+                android:layout_height="240dp"
+                android:layout_below="@id/impo_introduction"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_action_downwait"
+                android:contentDescription="@string/impo_acc_pic" />
+
+            <LinearLayout
+                android:id="@+id/impo_codes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/impo_imageView"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingBottom="50dp">
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/impo_optext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/impo_count"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/impo_count"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/impo_codes"
+                android:text="@string/importantCount" />
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/impo_child_Line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/impo_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/impo_zt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/impo_exbtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/importantExit"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/impo_detail"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/impo_detail"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
