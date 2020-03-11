@@ -1,4 +1,4 @@
-#CMath
+# CMath
 A dynamic loading app for Android
 
 + [Background](#Background)
@@ -8,17 +8,17 @@ A dynamic loading app for Android
 + [License](#License)
 
 
-##Background
+## Background
 I had been develop some Apps about math to solve some problems, and they are useful.
 But, I found the problem.
 All of the App has strong coupling that I can't fix some bugs as well that it need to re-install.
 So, I decide to develop an App, different to before
 It should has many cards(plugins) for download, the cards(plugins) should update on time, that I can fix some bugs as fast, and provide some new features for users.
 And, this is that App.
-##Install
+## Install
 It's easy. Be sure you has a Android system, and its version **must higher than 4.0 (Api 14, IceCreamSandwich)**.
 Download apk and install as usual.
-##Usage
+## Usage
 The App has many features, enjoy!
 - Add cards
 	- From card store
@@ -40,10 +40,10 @@ You can find it on sidemenu
 
 Enjoy all features in app! <=
 
-##Maintainers
+## Maintainers
 @ChensingML Yes, it's me.
 
-##License
+## License
 
 MIT License
 
