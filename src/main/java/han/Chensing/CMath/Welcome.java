@@ -1,6 +1,7 @@
 package han.Chensing.CMath;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -31,8 +32,6 @@ public class Welcome extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.welcome);
         //Only for develop and test
-        /*startActivity(new Intent(Welcome.this,MainActivity.class));
-        finish();*/
         handler = new Handler(getMainLooper());
         new Init().start();
     }
@@ -112,12 +111,22 @@ public class Welcome extends AppCompatActivity {
                     setText(R.string.welWait);
                     while (!CPermissions.allDown) ;
                     setText(R.string.welPrep);
+                    Settings.publicSharedPreferences=getApplicationContext().getSharedPreferences("settings",MODE_PRIVATE);
+                    Settings.isFirstStart=Settings.publicSharedPreferences.getBoolean(Settings.FIRST_START,false);
+                    if (Settings.isFirstStart) Settings.publicSharedPreferences.edit().putBoolean(Settings.SETTINGS_CHECK_UPDATE_ON_START,true).apply();
+                    Settings.settings_checkUpdatesOnStart=Settings.publicSharedPreferences.getBoolean(Settings.SETTINGS_CHECK_UPDATE_ON_START,false);
                     setText(R.string.welLoadFiles);
                     V.countRules = new ArrayList<>();
+                    if (Settings.settings_checkUpdatesOnStart){
+                        setText(R.string.welCheckUpdate);
+                    }
                     MainActivity.firstLoad(Welcome.this,null);
                     setText(R.string.welDone);
                     Thread.sleep(500);
                     startActivity(new Intent(Welcome.this,MainActivity.class));
+                    SharedPreferences.Editor editor = Settings.publicSharedPreferences.edit();
+                    editor.putBoolean(Settings.FIRST_START,true);
+                    editor.apply();
                     finish();
                     break;
                     //Finish here

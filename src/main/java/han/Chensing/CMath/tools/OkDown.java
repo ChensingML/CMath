@@ -14,7 +14,7 @@ public class OkDown {
 
     private static OkDown okDown;
     private static OkHttpClient okHttpClient;
-    public static volatile boolean isPass=false;
+    public static final Object lock=new Object();
 
     public static OkDown get(){
         if (okDown==null){
@@ -90,7 +90,9 @@ public class OkDown {
 
                     inputStream.close();
 
-                    isPass=true;
+                    synchronized (lock){
+                        lock.notify();
+                    }
                 }catch (Exception e){
                     lister.failed(e);
                 }

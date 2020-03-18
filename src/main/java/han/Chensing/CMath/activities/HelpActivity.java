@@ -79,9 +79,9 @@ public class HelpActivity extends AppCompatActivity {
         int length=sets.size();
         for (int i=0;i!=length;i++){
             String
-                    title=sets.get(i).problem.toLowerCase(),
-                    message=sets.get(i).solve.toLowerCase();
-            String lowerWord = searchWord.toLowerCase();
+                    title=sets.get(i).problem.toLowerCase().replace(" ",""),
+                    message=sets.get(i).solve.toLowerCase().replace(" ","");
+            String lowerWord = searchWord.toLowerCase().replace(" ","");
             if (
                     title.lastIndexOf(lowerWord)!=-1
                     || message.lastIndexOf(lowerWord)!=-1){

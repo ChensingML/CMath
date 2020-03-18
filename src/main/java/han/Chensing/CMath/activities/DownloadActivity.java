@@ -102,6 +102,7 @@ public class DownloadActivity extends AppCompatActivity {
         new AsyRefresh(this).execute(isFirst);
     }
 
+
     static class AsyRefresh extends AsyncTask<Boolean,Integer,Integer>{
 
         private Throwable throwable;
@@ -128,7 +129,7 @@ public class DownloadActivity extends AppCompatActivity {
                 arrayList=list;
                 ArrayList<MathAdapter.MathAdapterData> data = new ArrayList<>();
                 for (String[] ss : list) {
-                    MathAdapter.MathAdapterData mathAdapterData = new MathAdapter.MathAdapterData(ss[0],ss[1],ss[2],collected(ss[3]));
+                    MathAdapter.MathAdapterData mathAdapterData = new MathAdapter.MathAdapterData(ss[0],ss[1],ss[2],collected(ss[3]),false);
                     data.add(mathAdapterData);
                 }
                 mathAdapter = new MathAdapter(data, getActivity());
@@ -212,27 +213,6 @@ public class DownloadActivity extends AppCompatActivity {
             final Throwable[] throwable = {null};
             try {
                 String url=V.hostHead + strings[0] + ".cr";
-                /*HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setChunkedStreamingMode(0);
-                connection.setRequestProperty("Accept-Encoding", "identity");
-                connection.connect();
-                InputStream inputStream = connection.getInputStream();
-                int contentLength = connection.getContentLength();
-                int dw = contentLength / 100;
-                int progress = 0;
-                byte[] bytes;
-                if (contentLength!=-1) {
-                    bytes = new byte[contentLength];
-                    for (int i = 0, i2 = 0; i != contentLength; i++, i2++) {
-                        bytes[i] = (byte) inputStream.read();
-                        if (i2 == dw) {
-                            i2 = 0;
-                            publishProgress(progress++);
-                        }
-                    }
-                }*/
-                OkDown.isPass=false;
                 OkDown.get().download(
                         url,
                         new OkDown.DownloadLister() {
@@ -249,7 +229,9 @@ public class DownloadActivity extends AppCompatActivity {
                             public void failed(Exception ex) {
                                 throwable[0] = ex;
                                 errorNumber[0] = 402;
-                                OkDown.isPass=true;
+                                synchronized (OkDown.lock){
+                                    OkDown.lock.notify();
+                                }
                             }
 
                             @Override
@@ -269,13 +251,18 @@ public class DownloadActivity extends AppCompatActivity {
                                     fileOutputStream.write(bs);
                                     fileOutputStream.close();
                                     publishProgress(102);
+                                    synchronized (OkDown.lock){
+                                        OkDown.lock.notify();
+                                    }
                                 }catch (Exception e){
                                     failed(e);
                                 }
                             }
                         });
 
-                while (!OkDown.isPass);
+                synchronized (OkDown.lock){
+                    OkDown.lock.wait();
+                }
             } catch (Exception ex) {
                 throwable[0] = ex;
                 errorNumber[0] = 403;

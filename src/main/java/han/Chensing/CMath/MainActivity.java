@@ -23,8 +23,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -37,6 +40,7 @@ import han.Chensing.CMath.activities.SettingsActivity;
 import han.Chensing.CMath.adapters.EaAdapter;
 import han.Chensing.CMath.adapters.MathAdapter;
 import han.Chensing.CMath.tools.Download;
+import han.Chensing.CMath.tools.OkDown;
 import han.Chensing.CMath.widget.Ea;
 
 public class MainActivity extends AppCompatActivity {
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         bar_list.setAdapter(new EaAdapter(this,
                 new EaAdapter.EaData[]{
+                        new EaAdapter.EaData(R.drawable.ic_check_all,R.string.bar_check_all),
                         new EaAdapter.EaData(R.drawable.ic_add, R.string.bar_add),
                         new EaAdapter.EaData(R.drawable.ic_help, R.string.bar_help),
                         new EaAdapter.EaData(R.drawable.ic_settings,R.string.bar_settings),
@@ -94,21 +99,25 @@ public class MainActivity extends AppCompatActivity {
         bar_list.setOnItemClickListener((parent, view, position, id) -> {
             closeDrawer(imageButton, drawerLayout);
             switch (position) {
-                case 0: {//Add
+                case 0:{//Check
+                    new AsyCheckAll(this).execute();
+                    break;
+                }
+                case 1: {//Add
                     add();
                     break;
                 }
-                case 1: {//Help
+                case 2: {//Help
                     Intent intent=new Intent(this, HelpActivity.class);
                     startActivity(intent);
                     break;
                 }
-                case 2:{//Settings
+                case 3:{//Settings
                     Intent intent=new Intent(this, SettingsActivity.class);
                     startActivity(intent);
                     break;
                 }
-                case 3: {//About
+                case 4: {//About
                     Intent intent=new Intent(this, AboutActivity.class);
                     startActivity(intent);
                 }
@@ -127,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     listView.setAdapter(V.mathAdapter);
                 } else if (msg.what == 0x02) {
-                    runtimeLoad(MainActivity.this, null);
+                    ArrayList<MathAdapter.MathAdapterData> mathAdapterData = loadList(MainActivity.this, null, false);
+                    V.mathAdapter=new MathAdapter(mathAdapterData,MainActivity.this);
+                    listView.setAdapter(V.mathAdapter);
                 }
             }
         };
@@ -251,12 +262,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void firstLoad(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther) {
-        ArrayList<MathAdapter.MathAdapterData> dataList = loadList(appCompatActivity, countRulesFromOther);
+        ArrayList<MathAdapter.MathAdapterData> dataList = loadList(appCompatActivity, countRulesFromOther,Settings.settings_checkUpdatesOnStart);
         V.mathAdapter = new MathAdapter(dataList, appCompatActivity);
     }
 
+    public static boolean hasUpdate(ArrayList<String[]> downloadData,CountRule countRule){
+        if (downloadData==null) return false;
+        ArrayList<Integer> jOC=new ArrayList<>();
+        ArrayList<Float> ver=new ArrayList<>();
+        for (String[] s:downloadData){
+            jOC.add(Integer.parseInt(s[3]));
+            ver.add(Float.parseFloat(s[4]));
+        }
+        for (int i=0;i!=jOC.size();i++){
+            if (jOC.get(i)==countRule.getJustOneCode()){//Matched
+                if (ver.get(i)>countRule.getVersion()){//Has update
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
-    public static ArrayList<MathAdapter.MathAdapterData> loadList(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther) {
+    public static ArrayList<MathAdapter.MathAdapterData> loadList(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther, boolean isNeedCheckUpdate) {
         ArrayList<MathAdapter.MathAdapterData> dataList = new ArrayList<>();
         ArrayList<CountRule> rules = new ArrayList<>();
         if (countRulesFromOther != null) {
@@ -265,7 +294,8 @@ public class MainActivity extends AppCompatActivity {
                         countRule.getName(),
                         countRule.getMessage(),
                         countRule.getEditor(),
-                        true
+                        true,
+                        false
                 );
                 dataList.add(data);
                 rules.add(countRule);
@@ -278,6 +308,13 @@ public class MainActivity extends AppCompatActivity {
         if (!dataFile.exists()) while (!dataFile.mkdirs()) ;
         File[] files = dataFile.listFiles();
         if (files != null) {
+            ArrayList<String[]> downloadList=null;
+            if (isNeedCheckUpdate) {
+                try {
+                    downloadList = Download.downloadList();
+                } catch (IOException ignore) {
+                }
+            }
             for (File file : files) {
                 try {
                     String fileName = file.getName();
@@ -289,7 +326,8 @@ public class MainActivity extends AppCompatActivity {
                                 countRule.getName(),
                                 countRule.getMessage(),
                                 countRule.getEditor(),
-                                true
+                                true,
+                                hasUpdate(downloadList,countRule)
                         );
                         dataList.add(data);
                     }
@@ -389,9 +427,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class AsyCheck extends AsyncTask<Integer, Void, Integer> {
+    static class AsyCheck extends AsyncTask<Integer, Integer, Integer> {
 
         private Ea checkEa;
+        private ProgressBar[] bars=new ProgressBar[1];
         private WeakReference<MainActivity> weakReference;
 
         AsyCheck(MainActivity context) {
@@ -413,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle("Checking update");
             @SuppressLint("InflateParams") View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.prog, null);
             ProgressBar progressBar = view1.findViewById(R.id.the_prog);
+            bars[0]=progressBar;
             progressBar.setIndeterminate(true);
             checkEa.getBuilder()
                     .setView(view1)
@@ -447,6 +487,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            int value = values[0];
+            if (value==-1){
+                bars[0].setIndeterminate(true);
+                return;
+            }else if (value==101){
+                bars[0].setIndeterminate(true);
+                checkEa.getDialog().setTitle("Applying");
+                return;
+            }else if (value==102){
+                checkEa.getDialog().setTitle("Writing");
+                return;
+            }else if(value==103){
+                checkEa.getDialog().setTitle("Re-checking");
+                return;
+            }
+            bars[0].setIndeterminate(false);
+            bars[0].setProgress(value);
+        }
+
+        @Override
         protected Integer doInBackground(Integer... integers) {
             try {
                 CountRule countRule = V.countRules.get(integers[0]);
@@ -459,7 +521,63 @@ public class MainActivity extends AppCompatActivity {
                     float internetVersion = Float.parseFloat(strings[4]);
                     if (justOneCode == targetJustOneCode) {
                         if (internetVersion > thisVersion) {
-                            new DownloadActivity.AsyDownCountRule(getActivity()).execute(countRule.getName());
+                            final int[] callbackCode = {0};
+
+                            String url=V.hostHead + strings[0] + ".cr";
+                            OkDown.get().download(
+                                    url,
+                                    new OkDown.DownloadLister() {
+                                        @Override
+                                        public void downloadProgress(int progress) {
+                                            if (progress==-1) {
+                                                publishProgress(-1);
+                                                return;
+                                            }
+                                            publishProgress(progress);
+                                        }
+
+                                        @Override
+                                        public void failed(Exception ex) {
+                                            callbackCode[0]=-1;
+                                            synchronized (OkDown.lock){
+                                                OkDown.lock.notify();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void done(byte[] bs) {
+                                            try {
+                                                publishProgress(101);
+                                                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bs);
+                                                ObjectInputStream hessianInput = new ObjectInputStream(byteArrayInputStream);
+                                                CountRule countRule = (CountRule) hessianInput.readObject();
+                                                V.countRules.add(countRule);
+                                                publishProgress(102);
+                                                String stringBuilder = getActivity().getFilesDir().getPath() +
+                                                        "/" +
+                                                        countRule.getJustOneCode() +
+                                                        ".cr";
+                                                File file=new File(stringBuilder);
+                                                FileOutputStream fileOutputStream=new FileOutputStream(file);
+                                                fileOutputStream.write(bs);
+                                                fileOutputStream.close();
+                                                publishProgress(103);
+                                                ArrayList<MathAdapter.MathAdapterData> mathAdapterData = loadList(getActivity(), null, true);
+                                                V.mathAdapter=new MathAdapter(mathAdapterData,getActivity());
+                                                handler.sendEmptyMessage(0x01);
+                                                callbackCode[0]=0;
+                                            }catch (Exception e){
+                                                callbackCode[0] =-1;
+                                                failed(e);
+                                            }
+                                        }
+                                    });
+                            synchronized (OkDown.lock){
+                                OkDown.lock.wait();
+                            }
+                            if (callbackCode[0] ==-1){
+                                throw new IOException("");
+                            }
                             return 0;//Success
                         } else {
                             return 1;//Newest
@@ -467,9 +585,67 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 return 2;//Not found
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return -1;//Error
+            }
+        }
+    }
+
+    static class AsyCheckAll extends AsyncTask<Void,Void,Integer>{
+
+        private Ea checkEa;
+        private WeakReference<MainActivity> weakReference;
+
+        AsyCheckAll(MainActivity context) {
+            this.weakReference = new WeakReference<>(context);
+        }
+
+        private MainActivity getActivity() {
+            MainActivity mainActivity = weakReference.get();
+            if (mainActivity == null || mainActivity.isFinishing())
+                throw new NullPointerException();
+            return mainActivity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            checkEa=new Ea(getActivity());
+            View view=LayoutInflater.from(getActivity()).inflate(R.layout.prog,null);
+            ProgressBar bar=view.findViewById(R.id.the_prog);
+            bar.setIndeterminate(true);
+            checkEa.getBuilder().setView(view);
+            checkEa.setTitle("Preparing");
+            checkEa.show();
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            checkEa.dismiss();
+            /*
+             * 0        Success
+             * -1       Failed
+             */
+            Snackbar snackbar=Snackbar.make(getActivity().findViewById(R.id.mainCoo),"", Snackbar.LENGTH_SHORT);
+            if (integer==0){
+                snackbar.setText("Update checked");
+            }else if (integer==-1){
+                snackbar.setText("Failed to get update");
+            }
+            snackbar.show();
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            try{
+                ArrayList<MathAdapter.MathAdapterData> mathAdapterData = loadList(getActivity(), null, true);
+                V.mathAdapter=new MathAdapter(mathAdapterData,getActivity());
+                handler.sendEmptyMessage(0x01);
+                return 0;
+            }catch (Exception e){
+                return -1;
             }
         }
     }

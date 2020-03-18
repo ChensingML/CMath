@@ -7,6 +7,7 @@
     <string name="welExit">Exit</string>
     <string name="welWait">Waiting for you</string>
     <string name="welLoadFiles">Load cards</string>
+    <string name="welCheckUpdate">Checking updates of cards</string>
     <string name="welDone">Done</string>
 
     <string name="mainNoFile1">No cards,&#160;</string>
@@ -28,6 +29,7 @@
     <string name="list_delete">Delete!</string>
 
     <string name="bar_menu">Main menu</string>
+    <string name="bar_check_all">Check updates of all cards</string>
     <string name="bar_add">Add card</string>
     <string name="bar_help">Help</string>
     <string name="bar_about">About</string>
@@ -38,13 +40,14 @@
 
     <string name="help_search">Search for help…</string>
 
-    <string name="about_text1">Build Version 0.2\nCopyright © Chen.ZH 2020\nChen.ZH all right reserved\n\nTalk with me!\nQQ:1052470899\nWeChat:NAX-01\nCodemao:MainActivity</string>
+    <string name="about_text1">Build Version 0.3\nCopyright © Chen.ZH 2020\nChen.ZH all right reserved\n\nTalk with me!\nQQ:1052470899\nWeChat:NAX-01\nCodemao:MainActivity</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_text_clearCache">Clear cache</string>
     <string name="settings_button_clearCache">Clear now</string>
     <string name="settings_text_update">Check update</string>
     <string name="settings_button_update">Check now</string>
+    <string name="settings_switch_checkCardsOnStart">Check card updates on start up</string>
     <string name="settings_message_bottom">Yes, just this one, no more…(Surprised?)</string>
 
     <string name="acc_bar_pic">A background picture</string>

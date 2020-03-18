@@ -13,3 +13,10 @@
 + Add Setting
 	+ Add "Clear cache"
 + Fix some bugs
+
+## Build 0.3 (3/18/2020)
++ Improve updating feature
+	+ Add "Check updates for all cards"
+	+ Fix some bugs on updating cards
++ Improve searching help feature
++ Fix some bug

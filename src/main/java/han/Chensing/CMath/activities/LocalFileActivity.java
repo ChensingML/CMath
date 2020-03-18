@@ -64,7 +64,6 @@ public class LocalFileActivity extends AppCompatActivity {
                 } else if (item.getRes_image() == R.drawable.ic_otherfile) {                    //Other file
                     Snackbar.make(listView, "Not a support file", Snackbar.LENGTH_SHORT).show();
                 } else if (item.getRes_image() == R.drawable.ic_card) {                          //Card file
-                    //TODO Yes,it is.
                     String path = pathStack.peek() + "/" + item.getText();
                     new AsyApplyFileCountRule(this).execute(path);
                 }

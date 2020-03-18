@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class MathAdapter extends BaseAdapter {
             mathAdapterItem.mainText=view.findViewById(R.id.list1_name);
             mathAdapterItem.editor=view.findViewById(R.id.list1_editor);
             mathAdapterItem.secondText=view.findViewById(R.id.list1_second);
+            mathAdapterItem.hasUpdate=view.findViewById(R.id.list_1_update);
             mathAdapterItem.relativeLayout=view.findViewById(R.id.list_1_rl);
             view.setTag(mathAdapterItem);
         }else {
@@ -55,6 +57,11 @@ public class MathAdapter extends BaseAdapter {
         mathAdapterItem.mainText.setText(data.strMainText);
         mathAdapterItem.secondText.setText(data.strSecondText);
         mathAdapterItem.editor.setText(data.strEditor);
+        if (data.hasUpdate){
+            mathAdapterItem.hasUpdate.setVisibility(View.VISIBLE);
+        }else {
+            mathAdapterItem.hasUpdate.setVisibility(View.GONE);
+        }
         if (data.isCollected){
             mathAdapterItem.relativeLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.h_shape_selected));
         }
@@ -67,22 +74,25 @@ public class MathAdapter extends BaseAdapter {
         TextView mainText;
         TextView secondText;
         TextView editor;
+        ImageView hasUpdate;
         RelativeLayout relativeLayout;
 
     }
 
     public static class MathAdapterData{
 
-        public String strMainText;
-        public String strSecondText;
-        public String strEditor;
-        public boolean isCollected;
+        String strMainText;
+        String strSecondText;
+        String strEditor;
+        boolean isCollected;
+        boolean hasUpdate;
 
-        public MathAdapterData(String strMainText, String strSecondText, String strEditor,boolean isCollected) {
+        public MathAdapterData(String strMainText, String strSecondText, String strEditor,boolean isCollected,boolean hasUpdate) {
             this.strMainText=strMainText;
             this.strSecondText=strSecondText;
             this.strEditor=strEditor;
             this.isCollected=isCollected;
+            this.hasUpdate=hasUpdate;
         }
     }
 }

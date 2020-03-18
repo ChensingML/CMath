@@ -2,7 +2,6 @@ package han.Chensing.CMath.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Switch;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import han.Chensing.CMath.R;
+import han.Chensing.CMath.Settings;
 import han.Chensing.CMath.V;
 import han.Chensing.CMath.tools.Download;
 import han.Chensing.CMath.tools.OkDown;
@@ -36,35 +37,42 @@ import han.Chensing.CMath.widget.Ea;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    SharedPreferences sharedPreferences;
-
     private static ArrayList<Button> buttons;
+    private static ArrayList<Switch> switches;
     private static boolean isRunning=false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        sharedPreferences=getApplicationContext().getSharedPreferences("settings",MODE_PRIVATE);
         //Get settings
-        //Coming soon
 
         if (buttons==null) {
             buttons = new ArrayList<>();
         }else {
             buttons.clear();
         }
+        if (switches==null){
+            switches=new ArrayList<>();
+        }else {
+            switches.clear();
+        }
 
         Button
                 clear_cache=findViewById(R.id.settings_clear),
                 update=findViewById(R.id.settings_update);
+        Switch
+                check_update_on_start=findViewById(R.id.settings_check_card_on_start);
         ProgressBar progressBar=findViewById(R.id.settings_progress);
 
         clear_cache.setOnClickListener(v -> new AsyClean(this).execute());
         update.setOnClickListener(v -> new AsyUpdate(this).execute());
+        check_update_on_start.setOnClickListener(v -> changeBooleanSetting(Settings.SETTINGS_CHECK_UPDATE_ON_START,check_update_on_start.isChecked()));
 
         buttons.add(clear_cache);
         buttons.add(update);
+        switches.add(check_update_on_start);
+        getSettings();
         doButtons(buttons,progressBar,isRunning);
     }
 
@@ -86,6 +94,18 @@ public class SettingsActivity extends AppCompatActivity {
         for (Button button:buttons){
             button.setEnabled(!doingOrDid);
         }
+    }
+
+    private void changeBooleanSetting(String key,boolean value){
+        Settings.publicSharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
+    private boolean getBooleanSettings(String key){
+        return Settings.publicSharedPreferences.getBoolean(key,false);
+    }
+
+    private void getSettings(){
+        switches.get(0).setChecked(getBooleanSettings(Settings.SETTINGS_CHECK_UPDATE_ON_START));
     }
 
     static class AsyClean extends AsyncTask<Void,Void,Void>{
