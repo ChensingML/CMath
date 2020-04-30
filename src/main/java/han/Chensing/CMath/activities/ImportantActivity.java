@@ -39,6 +39,14 @@ import han.Chensing.CMath.R;
 import han.Chensing.CMath.V;
 import han.Chensing.CMath.widget.Ea;
 
+/**
+ * ImportantActivity And CardLoader
+ *
+ * CardLoader version Indev 3
+ * 2020/3/22
+ */
+
+
 public class ImportantActivity extends AppCompatActivity {
 
     static ArrayList<View> forS;

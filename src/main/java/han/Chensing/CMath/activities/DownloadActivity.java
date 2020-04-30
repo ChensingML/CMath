@@ -297,6 +297,7 @@ public class DownloadActivity extends AppCompatActivity {
                 progressBar.setIndeterminate(true);
             } else if (value==102) {
                 alertDialog.dismiss();
+                MainActivity.handler.sendEmptyMessage(0x01);
                 MainActivity.handler.sendEmptyMessage(0x02);
             }else if (value==103) {
                 progressBar.setIndeterminate(true);

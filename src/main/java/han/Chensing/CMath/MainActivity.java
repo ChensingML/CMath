@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         bar_list.setOnItemLongClickListener((parent, view, position, id) -> {
             closeDrawer(imageButton, drawerLayout);
-            if (position==3){
+            if (position==4){
                 Intent intent=new Intent(this,AboutActivity.class);
                 intent.putExtra("is_less",true);
                 startActivity(intent);
@@ -136,9 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     listView.setAdapter(V.mathAdapter);
                 } else if (msg.what == 0x02) {
-                    ArrayList<MathAdapter.MathAdapterData> mathAdapterData = loadList(MainActivity.this, null, false);
-                    V.mathAdapter=new MathAdapter(mathAdapterData,MainActivity.this);
-                    listView.setAdapter(V.mathAdapter);
+                    runtimeLoad(MainActivity.this,null,2);
                 }
             }
         };
@@ -256,13 +254,32 @@ public class MainActivity extends AppCompatActivity {
         return getResources().getString(res_id);
     }
 
-    public static void runtimeLoad(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther) {
-        firstLoad(appCompatActivity, countRulesFromOther);
+    public static void runtimeLoad(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther,int needCheckUpdate) {
+        firstLoad(appCompatActivity, countRulesFromOther,needCheckUpdate);
         MainActivity.handler.sendEmptyMessage(0x01);
     }
 
-    public static void firstLoad(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther) {
-        ArrayList<MathAdapter.MathAdapterData> dataList = loadList(appCompatActivity, countRulesFromOther,Settings.settings_checkUpdatesOnStart);
+    /**
+     * @param needCheckUpdate 1-Force need; Other&0-Follow Settings; 2-Force close;
+     */
+    public static void firstLoad(AppCompatActivity appCompatActivity, ArrayList<CountRule> countRulesFromOther,int needCheckUpdate) {
+        boolean needUpdate;
+        switch (needCheckUpdate){
+            default:
+            case 0:{
+                needUpdate=Settings.settings_checkUpdatesOnStart;
+                break;
+            }
+            case 1:{
+                needUpdate=true;
+                break;
+            }
+            case 2:{
+                needUpdate=false;
+                break;
+            }
+        }
+        ArrayList<MathAdapter.MathAdapterData> dataList = loadList(appCompatActivity, countRulesFromOther,needUpdate);
         V.mathAdapter = new MathAdapter(dataList, appCompatActivity);
     }
 
@@ -612,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             checkEa=new Ea(getActivity());
-            View view=LayoutInflater.from(getActivity()).inflate(R.layout.prog,null);
+            @SuppressLint("InflateParams") View view=LayoutInflater.from(getActivity()).inflate(R.layout.prog,null);
             ProgressBar bar=view.findViewById(R.id.the_prog);
             bar.setIndeterminate(true);
             checkEa.getBuilder().setView(view);

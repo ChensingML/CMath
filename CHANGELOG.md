@@ -19,4 +19,7 @@
 	+ Add "Check updates for all cards"
 	+ Fix some bugs on updating cards
 + Improve searching help feature
-+ Fix some bug
++ Fix some bugs
+
+## Build 0.3 f1 (4/30/2020)
++ Fix some bugs

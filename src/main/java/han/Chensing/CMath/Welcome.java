@@ -111,21 +111,23 @@ public class Welcome extends AppCompatActivity {
                     setText(R.string.welWait);
                     while (!CPermissions.allDown) ;
                     setText(R.string.welPrep);
+
                     Settings.publicSharedPreferences=getApplicationContext().getSharedPreferences("settings",MODE_PRIVATE);
-                    Settings.isFirstStart=Settings.publicSharedPreferences.getBoolean(Settings.FIRST_START,false);
-                    if (Settings.isFirstStart) Settings.publicSharedPreferences.edit().putBoolean(Settings.SETTINGS_CHECK_UPDATE_ON_START,true).apply();
+                    Settings.isFirstStart=Settings.publicSharedPreferences.getBoolean(Settings.FIRST_START,true);
                     Settings.settings_checkUpdatesOnStart=Settings.publicSharedPreferences.getBoolean(Settings.SETTINGS_CHECK_UPDATE_ON_START,false);
+                    if (Settings.isFirstStart) Settings.publicSharedPreferences.edit().putBoolean(Settings.SETTINGS_CHECK_UPDATE_ON_START,true).apply();
+
                     setText(R.string.welLoadFiles);
                     V.countRules = new ArrayList<>();
                     if (Settings.settings_checkUpdatesOnStart){
                         setText(R.string.welCheckUpdate);
                     }
-                    MainActivity.firstLoad(Welcome.this,null);
+                    MainActivity.firstLoad(Welcome.this,null,0);
                     setText(R.string.welDone);
                     Thread.sleep(500);
                     startActivity(new Intent(Welcome.this,MainActivity.class));
                     SharedPreferences.Editor editor = Settings.publicSharedPreferences.edit();
-                    editor.putBoolean(Settings.FIRST_START,true);
+                    editor.putBoolean(Settings.FIRST_START,false);
                     editor.apply();
                     finish();
                     break;

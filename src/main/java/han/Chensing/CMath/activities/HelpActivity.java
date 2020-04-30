@@ -32,6 +32,8 @@ public class HelpActivity extends AppCompatActivity {
 
     static ArrayList<DataSet> sets=new ArrayList<>();
 
+    static ArrayList<DataSet> nowSet=new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,7 @@ public class HelpActivity extends AppCompatActivity {
         });
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            DataSet dataSet = sets.get(position);
+            DataSet dataSet = nowSet.get(position);
             Ea ea=new Ea(this);
             ea
                     .setTitle(dataSet.problem.replace('&','\n'))
@@ -74,7 +76,10 @@ public class HelpActivity extends AppCompatActivity {
     }
 
     private EaAdapter search(String searchWord){
-        if (searchWord.isEmpty()) return getAdapter(this,sets);
+        if (searchWord.isEmpty()){
+            nowSet=sets;
+            return getAdapter(this,sets);
+        }
         ArrayList<DataSet> data=new ArrayList<>();
         int length=sets.size();
         for (int i=0;i!=length;i++){
@@ -88,6 +93,8 @@ public class HelpActivity extends AppCompatActivity {
                 data.add(sets.get(i));
             }
         }
+        nowSet.clear();
+        nowSet.addAll(data);
         return getAdapter(this,data);
     }
 
@@ -166,7 +173,7 @@ public class HelpActivity extends AppCompatActivity {
                     String[] ss=string.split("#");
                     sets.add(new DataSet(ss[0],ss[1]));
                 }
-
+                nowSet.addAll(sets);
                 return getAdapter(getActivity(),sets);
 
             }catch (Exception e){

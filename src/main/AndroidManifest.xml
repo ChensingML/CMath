@@ -29,6 +29,7 @@
         <activity android:name=".activities.HelpActivity" android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".activities.AboutActivity" android:theme="@style/AboutTheme"/>
         <activity android:name=".activities.SettingsActivity"/>
+        <activity android:name=".activities.SearchActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
